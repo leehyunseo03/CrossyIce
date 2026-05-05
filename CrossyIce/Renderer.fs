@@ -2,6 +2,12 @@ namespace CrossyIce
 
 open Raylib_cs
 
+type Direction =
+    | Front
+    | Back
+    | Right
+    | Left
+
 type CellStyle =
     { BaseColor: Color
       DrawDetail: int -> int -> int -> unit }
@@ -89,5 +95,64 @@ type Renderer(windowWidth: int, windowHeight: int) =
 
         cellSize, originX, originY
 
-    member _.DrawMap(stageMap: StageMap) =
-        drawMap stageMap |> ignore
+    let drawPenguin (x: int) (y: int) (dir: Direction) (cellSize: int) =
+        // LLM used
+        let bodyColor = Color.Black
+        let bellyColor = Color.White
+        let beakColor = Color.Orange
+        let wingColor = Color.DarkGray
+        let scale = float32 cellSize / 112.0f
+        let offset value = int (float32 value * scale)
+        let radius value = float32 value * scale
+        
+        match dir with
+        | Front ->
+            Raylib.DrawEllipse(x - offset 22, y + offset 10, radius 10, radius 25, bodyColor)
+            Raylib.DrawEllipse(x + offset 22, y + offset 10, radius 10, radius 25, bodyColor)
+            Raylib.DrawEllipse(x - offset 12, y + offset 42, radius 12, radius 8, beakColor)
+            Raylib.DrawEllipse(x + offset 12, y + offset 42, radius 12, radius 8, beakColor)
+            Raylib.DrawEllipse(x, y, radius 28, radius 45, bodyColor)
+            Raylib.DrawEllipse(x, y + offset 12, radius 20, radius 30, bellyColor)
+            Raylib.DrawCircle(x - offset 10, y - offset 15, radius 6, Color.White)
+            Raylib.DrawCircle(x + offset 10, y - offset 15, radius 6, Color.White)
+            Raylib.DrawCircle(x - offset 10, y - offset 15, radius 3, Color.Black)
+            Raylib.DrawCircle(x + offset 10, y - offset 15, radius 3, Color.Black)
+            Raylib.DrawEllipse(x, y - offset 5, radius 8, radius 5, beakColor)
+
+        | Back ->
+            Raylib.DrawEllipse(x - offset 22, y + offset 10, radius 10, radius 25, bodyColor)
+            Raylib.DrawEllipse(x + offset 22, y + offset 10, radius 10, radius 25, bodyColor)
+            Raylib.DrawEllipse(x - offset 12, y + offset 42, radius 12, radius 8, beakColor)
+            Raylib.DrawEllipse(x + offset 12, y + offset 42, radius 12, radius 8, beakColor)
+            Raylib.DrawEllipse(x, y, radius 28, radius 45, bodyColor)
+
+        | Right ->
+            Raylib.DrawEllipse(x - offset 5, y + offset 42, radius 12, radius 8, beakColor)
+            Raylib.DrawEllipse(x + offset 10, y + offset 42, radius 12, radius 8, beakColor)
+            Raylib.DrawEllipse(x, y, radius 24, radius 45, bodyColor)
+            Raylib.DrawEllipse(x + offset 8, y + offset 12, radius 12, radius 30, bellyColor)
+            Raylib.DrawEllipse(x + offset 22, y - offset 10, radius 10, radius 5, beakColor)
+            Raylib.DrawCircle(x + offset 8, y - offset 18, radius 6, Color.White)
+            Raylib.DrawCircle(x + offset 10, y - offset 18, radius 3, Color.Black)
+            Raylib.DrawEllipse(x - offset 2, y + offset 10, radius 8, radius 25, wingColor)
+
+        | Left ->
+            Raylib.DrawEllipse(x + offset 5, y + offset 42, radius 12, radius 8, beakColor)
+            Raylib.DrawEllipse(x - offset 10, y + offset 42, radius 12, radius 8, beakColor)
+            Raylib.DrawEllipse(x, y, radius 24, radius 45, bodyColor)
+            Raylib.DrawEllipse(x - offset 8, y + offset 12, radius 12, radius 30, bellyColor)
+            Raylib.DrawEllipse(x - offset 22, y - offset 10, radius 10, radius 5, beakColor)
+            Raylib.DrawCircle(x - offset 8, y - offset 18, radius 6, Color.White)
+            Raylib.DrawCircle(x - offset 10, y - offset 18, radius 3, Color.Black)
+            Raylib.DrawEllipse(x + offset 2, y + offset 10, radius 8, radius 25, wingColor)
+
+    let drawPlayer (player: Player) (cellSize: int) (originX: int) (originY: int) =
+        let position = player.Position
+        let x = originX + (position.X * cellSize) + (cellSize / 2)
+        let y = originY + (position.Y * cellSize) + (cellSize / 2)
+        drawPenguin x y Front cellSize
+
+
+    member _.Draw(stageMap: StageMap) (player: Player) =
+        let cellSize, originX, originY = drawMap stageMap
+        drawPlayer player cellSize originX originY

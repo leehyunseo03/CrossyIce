@@ -7,7 +7,8 @@ module Program =
 
     let stageMap = StageMap(StageInfo.stage)
     let renderer = Renderer(ScreenWidth, ScreenHeight)
-
+    let player = Player(stageMap.StartPoint)
+    
     let setup () =
         Raylib.InitWindow (ScreenWidth, ScreenHeight, "CrossyIce - 20220557 Hyunseo Lee")
         Raylib.SetTargetFPS (60)
@@ -15,7 +16,7 @@ module Program =
     let render () =
         Raylib.BeginDrawing ()
         Raylib.ClearBackground (Color(226uy, 235uy, 244uy, 255uy))
-        renderer.DrawMap (stageMap)
+        renderer.Draw stageMap player
         Raylib.EndDrawing ()
 
     let cleanup () = Raylib.CloseWindow()

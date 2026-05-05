@@ -5,9 +5,18 @@ type StageMap(definition: StageDefinition) =
 
     let width = rows[0].Length
     let height = rows.Length
+    
+    let mutable startPoint: GridPoint = { X = 0; Y = 0 }
+    let mutable goalPoint: GridPoint = { X = 0; Y = 0 }
 
     let parseCell x y symbol =
         match CellKind.FromSymbol symbol with
+        | Some Start -> 
+            startPoint <- { X = x; Y = y }
+            Start
+        | Some Goal -> 
+            goalPoint <- { X = x; Y = y }
+            Goal
         | Some kind -> kind
         | None -> failwith "Incorrect Symbol"
 
@@ -18,6 +27,9 @@ type StageMap(definition: StageDefinition) =
         )
         
     member _.Name = definition.Name
+    member _.StartPoint = startPoint
+    member _.GoalPoint = goalPoint
+
     member _.Width = width
     member _.Height = height
     member _.IsInside(point: GridPoint) =
