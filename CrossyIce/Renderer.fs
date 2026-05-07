@@ -2,16 +2,6 @@ namespace CrossyIce
 
 open Raylib_cs
 
-type Direction =
-    | Front
-    | Back
-    | Right
-    | Left
-
-type CellStyle =
-    { BaseColor: Color
-      DrawDetail: int -> int -> int -> unit }
-
 type Renderer(windowWidth: int, windowHeight: int) =
     let boardPadding = 36
 
@@ -147,11 +137,11 @@ type Renderer(windowWidth: int, windowHeight: int) =
             Raylib.DrawEllipse(x + offset 2, y + offset 10, radius 8, radius 25, wingColor)
 
     let drawPlayer (player: Player) (cellSize: int) (originX: int) (originY: int) =
-        let position = player.Position
+        let position = player.getPosition
+        let direction = player.getDirection
         let x = originX + (position.X * cellSize) + (cellSize / 2)
         let y = originY + (position.Y * cellSize) + (cellSize / 2)
-        drawPenguin x y Front cellSize
-
+        drawPenguin x y direction cellSize
 
     member _.Draw(stageMap: StageMap) (player: Player) =
         let cellSize, originX, originY = drawMap stageMap

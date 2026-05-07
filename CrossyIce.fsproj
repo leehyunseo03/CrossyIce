@@ -10,6 +10,7 @@
     <Compile Include="CrossyIce/StageInfo.fs" />
     <Compile Include="CrossyIce/Player.fs" />
     <Compile Include="CrossyIce/StageMap.fs" />
+    <Compile Include="CrossyIce/Session.fs" />
     <Compile Include="CrossyIce/Renderer.fs" />
     <Compile Include="CrossyIce/Program.fs" />
   </ItemGroup>

@@ -1,4 +1,5 @@
 namespace CrossyIce
+open Raylib_cs
 
 type StageDefinition =
     { Name: string
@@ -8,6 +9,16 @@ type StageDefinition =
 type GridPoint =
     { X: int
       Y: int }
+
+type Direction =
+    | Front
+    | Back
+    | Right
+    | Left
+
+type CellStyle =
+    { BaseColor: Color
+      DrawDetail: int -> int -> int -> unit }
 
 type CellKind =
     | Dry
