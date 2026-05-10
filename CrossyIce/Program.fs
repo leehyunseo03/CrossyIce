@@ -22,7 +22,8 @@ module Program =
 
     let rec gameLoop () =
         if not (CBool.op_Implicit(Raylib.WindowShouldClose())) then
-            gameSession.Update()
+            let frameTime = Raylib.GetFrameTime ()
+            gameSession.Update(frameTime)
             render ()
             gameLoop ()
 

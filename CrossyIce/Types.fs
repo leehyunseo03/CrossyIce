@@ -6,9 +6,12 @@ type StageDefinition =
       Layout: string list }
 
 [<Struct>]
-type GridPoint =
-    { X: int
-      Y: int }
+type Point<'T> = 
+    { X: 'T
+      Y: 'T }
+
+type GridPoint = Point<int>
+type VisualPoint = Point<float32>
 
 type Direction =
     | Front
