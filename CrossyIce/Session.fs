@@ -16,34 +16,44 @@ type Session(stageDefinition: StageDefinition) =
         | FragileWall -> true
         | _ -> false
 
+    let rec getDestination (pos: GridPoint) (direction: Direction) = 
+        let nextPos = 
+            match direction with
+                | Back -> { pos with Y = pos.Y - 1 }
+                | Front -> { pos with Y = pos.Y + 1 }
+                | Left -> { pos with X = pos.X - 1 }
+                | Right -> { pos with X = pos.X + 1 }
+        
+        let nextCell = stageMap.CellAt nextPos
+
+        if checkCollision nextPos then
+            pos
+        elif nextCell.Slides then
+            getDestination nextPos direction
+        else
+            nextPos
+            
+
     let updatePlayerMovement (frameTime: float32) =
         player.setVisualPosition frameTime
         
         if not player.isMoving then 
             let playerPos = player.getPosition
+            
+            let newDir = 
+                if isKeyPressed KeyboardKey.W then Some Back
+                elif isKeyPressed KeyboardKey.S then Some Front
+                elif isKeyPressed KeyboardKey.A then Some Left
+                elif isKeyPressed KeyboardKey.D then Some Right
+                else None
 
-            let newPos = 
-                if isKeyPressed KeyboardKey.W then
-                    player.setDirection Back
-                    Some {playerPos with Y = playerPos.Y - 1}
-                elif isKeyPressed KeyboardKey.S then
-                    player.setDirection Front
-                    Some {playerPos with Y = playerPos.Y + 1}
-                elif isKeyPressed KeyboardKey.A then
-                    player.setDirection Left
-                    Some {playerPos with X = playerPos.X - 1}
-                elif isKeyPressed KeyboardKey.D then
-                    player.setDirection Right
-                    Some {playerPos with X = playerPos.X + 1}
-                else
-                    None
+            match newDir with
+            | Some dir -> 
+                player.setDirection dir
+                let finalPos = getDestination playerPos dir
 
-            match newPos with
-            | Some pos -> 
-                if checkCollision pos then
-                    ()
-                else 
-                    player.setPosition pos
+                if finalPos <> playerPos then 
+                    player.setPosition finalPos
             | None -> ()
 
     member _.StageMap = stageMap
