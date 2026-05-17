@@ -14,6 +14,10 @@ type Player(initPosition: GridPoint) =
     member _.setPosition (nextPos: GridPoint) = 
         position <- nextPos
 
+    member _.resetPosition (nextPos: GridPoint) = 
+        position <- nextPos
+        visualPosition <- toVisual nextPos
+        
     member _.getDirection = direction
     member _.setDirection (nextDir: Direction) = 
         direction <- nextDir
@@ -25,7 +29,7 @@ type Player(initPosition: GridPoint) =
         let dx = targetVisPos.X - visualPosition.X
         let dy = targetVisPos.Y - visualPosition.Y
         let distance = sqrt (dx * dx + dy * dy)
-        let moveParam = 5.0f * frameTime
+        let moveParam = 6.0f * frameTime
 
         if distance <= moveParam then
             visualPosition <- targetVisPos

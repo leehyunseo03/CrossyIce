@@ -5,7 +5,7 @@ module Program =
     let ScreenWidth = 1024
     let ScreenHeight = 768
 
-    let gameSession = Session(StageInfo.stage)
+    let gameSession = Session(StageInfo.stages)
     let renderer = Renderer(ScreenWidth, ScreenHeight)
     
     let setup () =
