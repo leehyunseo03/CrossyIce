@@ -3,7 +3,8 @@ open Raylib_cs
 
 type StageDefinition =
     { Name: string
-      Layout: string list }
+      Layout: string list 
+      bombCount: int}
 
 [<Struct>]
 type Point<'T> = 
@@ -19,9 +20,6 @@ type Direction =
     | Right
     | Left
 
-type Bomb =
-    { Position: GridPoint }
-    
 type CellStyle =
     { BaseColor: Color
       DrawDetail: int -> int -> int -> unit }

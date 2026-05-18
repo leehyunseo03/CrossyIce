@@ -7,6 +7,8 @@
 
   <ItemGroup>
     <Compile Include="CrossyIce/Types.fs" />
+    <Compile Include="CrossyIce/GameObject.fs" />
+    <Compile Include="CrossyIce/Bomb.fs" />
     <Compile Include="CrossyIce/StageInfo.fs" />
     <Compile Include="CrossyIce/Player.fs" />
     <Compile Include="CrossyIce/StageMap.fs" />

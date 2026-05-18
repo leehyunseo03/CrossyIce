@@ -137,8 +137,10 @@ type Renderer(windowWidth: int, windowHeight: int) =
             Raylib.DrawEllipse(x + offset 2, y + offset 10, radius 8, radius 25, wingColor)
 
     let drawBomb (bomb: Bomb) (cellSize: int) (originX: int) (originY: int) =
-        let centerX = originX + bomb.Position.X * cellSize + cellSize / 2
-        let centerY = originY + bomb.Position.Y * cellSize + cellSize / 2
+        let position = bomb.getVisualPosition
+
+        let centerX = originX + int (position.X * float32 cellSize) + cellSize / 2
+        let centerY = originY + int (position.Y * float32 cellSize) + cellSize / 2
         let radius = float32 cellSize * 0.40f
         // LLM used
         Raylib.DrawCircle(centerX, centerY, radius, Color.Black)
@@ -152,7 +154,7 @@ type Renderer(windowWidth: int, windowHeight: int) =
         let y = originY + int (position.Y * float32 cellSize) + (cellSize / 2)
         drawPenguin x y direction cellSize
 
-    member _.Draw(stageMap: StageMap) (player: Player) (bombs: Bomb list) =
+    member _.Draw(stageMap: StageMap) (player: Player) (bombs: Bomb list) (bombCount: int)=
         let cellSize, originX, originY = drawMap stageMap
         bombs |> List.iter (fun bomb -> drawBomb bomb cellSize originX originY)
         drawPlayer player cellSize originX originY

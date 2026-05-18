@@ -27,6 +27,7 @@ type StageMap(definition: StageDefinition) =
         )
         
     member _.Name = definition.Name
+    member _.getBombCount = definition.bombCount
     member _.StartPoint = startPoint
     member _.GoalPoint = goalPoint
 

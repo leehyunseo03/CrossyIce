@@ -5,13 +5,14 @@ open Raylib_cs
 type Session(stageDefinitionlist: StageDefinition list) =
     let mutable stageIndex = 0
     let mutable stageMap = StageMap(stageDefinitionlist[stageIndex])
-    let player = Player(stageMap.StartPoint)
-
+    
     let mutable bombs: Bomb list = []
+    let mutable remainBombCount = stageMap.getBombCount
+
+    let player = Player(stageMap.StartPoint)
     
     let isBombAt point =
-        bombs |> List.exists (fun bomb -> bomb.Position = point)
-    
+        bombs |> List.exists (fun bomb -> bomb.getPosition = point)
 
     let isKeyPressed key : bool =
         Raylib.IsKeyPressed(key)
@@ -20,6 +21,7 @@ type Session(stageDefinitionlist: StageDefinition list) =
         stageIndex <- stageIndex + 1
         stageMap <- StageMap(stageDefinitionlist[stageIndex])
         bombs <- []
+        remainBombCount <- stageMap.getBombCount
         player.resetPosition stageMap.StartPoint
 
     let checkStageClear (point: GridPoint) = 
@@ -57,37 +59,37 @@ type Session(stageDefinitionlist: StageDefinition list) =
     let canPlaceBombAt point =
         stageMap.IsInside point
         && not (checkCollision point)
-        && not (isBombAt point)
 
     let tryGetBombAt point =
-        bombs |> List.tryFind (fun bomb -> bomb.Position = point)
+        bombs |> List.tryFind (fun bomb -> bomb.getPosition = point)
 
-    let tryPushBomb bomb direction =
-        let finalBombPos = getDestination bomb.Position direction
+    let tryPushBomb (bomb:Bomb) direction =
+        let finalBombPos = getDestination bomb.getPosition direction
 
-        if finalBombPos = bomb.Position then
+        if finalBombPos = bomb.getPosition then
             false
         else
-            bombs <-
-                bombs 
-                |> List.map (fun b ->
-                    if b.Position = bomb.Position then
-                        { b with Position = finalBombPos }
-                    else
-                        b
-                )
+            bomb.setPosition finalBombPos
             true
 
     let placeBomb () =
         let target = frontPoint player.getPosition player.getDirection
 
-        if canPlaceBombAt target then
-            bombs <- { Position = target } :: bombs
-            
-    let updatePlayerMovement (frameTime: float32) =
+        if canPlaceBombAt target && remainBombCount > 0 then
+            bombs <- Bomb(target) :: bombs
+            remainBombCount <- remainBombCount - 1
+    
+    let isAnyBombMoving () =
+        bombs |> List.exists (fun bomb -> bomb.isMoving)
+
+    let updateObjectVisualPositions frameTime =
         player.setVisualPosition frameTime
+        bombs |> List.iter (fun bomb -> bomb.setVisualPosition frameTime)
         
-        if not player.isMoving then 
+    let updatePlayerMovement (frameTime: float32) =
+        updateObjectVisualPositions frameTime
+        
+        if not player.isMoving && not (isAnyBombMoving ()) then 
             if checkStageClear player.getPosition then
               stageClear ()
             elif isKeyPressed KeyboardKey.Space then
@@ -111,13 +113,18 @@ type Session(stageDefinitionlist: StageDefinition list) =
                     | Some bomb -> 
                         if tryPushBomb bomb dir then
                             player.setPosition nextPos
-                    | None -> player.setPosition (getDestination playerPos dir)
+                    | None -> 
+                        let finalPos = getDestination playerPos dir
+                        if finalPos <> playerPos then
+                            player.setPosition finalPos
 
                 | None -> ()
 
     member _.StageMap = stageMap
     member _.Player = player
     member _.Bombs = bombs
+
+    member _.getRemainBombCount = remainBombCount
 
     member _.Update(frameTime: float32) =
         updatePlayerMovement(frameTime)
