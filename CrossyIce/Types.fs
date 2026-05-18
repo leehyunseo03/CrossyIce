@@ -19,6 +19,9 @@ type Direction =
     | Right
     | Left
 
+type Bomb =
+    { Position: GridPoint }
+    
 type CellStyle =
     { BaseColor: Color
       DrawDetail: int -> int -> int -> unit }

@@ -11,3 +11,9 @@ Used LLM : Gemini 3.1 Pro
 ```
 Using f# and Raylib, draw cute simple penguin in 2d that facing front, left, right, and backward. make simple as possible.
 ```
+
+3. Bomb Design
+Used LLM : Gemini 3.1 Pro
+```
+Using f# and Raylib, draw Big simple bomb in 2d. make it simple as possible. use cellsize, centerx, centery, radius as given parameter. make as simple as possible. use less than 5 lines. do not use external library
+```
