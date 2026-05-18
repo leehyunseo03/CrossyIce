@@ -8,6 +8,10 @@ type Session(stageDefinitionlist: StageDefinition list) =
     let player = Player(stageMap.StartPoint)
 
     let mutable bombs: Bomb list = []
+    
+    let isBombAt point =
+        bombs |> List.exists (fun bomb -> bomb.Position = point)
+    
 
     let isKeyPressed key : bool =
         Raylib.IsKeyPressed(key)
@@ -29,6 +33,7 @@ type Session(stageDefinitionlist: StageDefinition list) =
         match cellType with
         | SolidWall -> true
         | FragileWall -> true
+        | _ when isBombAt point -> true
         | _ -> false
 
     let frontPoint (pos: GridPoint) (direction: Direction) =
@@ -49,13 +54,29 @@ type Session(stageDefinitionlist: StageDefinition list) =
         else
             nextPos
     
-    let isBombAt point =
-        bombs |> List.exists (fun bomb -> bomb.Position = point)
-    
     let canPlaceBombAt point =
         stageMap.IsInside point
         && not (checkCollision point)
         && not (isBombAt point)
+
+    let tryGetBombAt point =
+        bombs |> List.tryFind (fun bomb -> bomb.Position = point)
+
+    let tryPushBomb bomb direction =
+        let finalBombPos = getDestination bomb.Position direction
+
+        if finalBombPos = bomb.Position then
+            false
+        else
+            bombs <-
+                bombs 
+                |> List.map (fun b ->
+                    if b.Position = bomb.Position then
+                        { b with Position = finalBombPos }
+                    else
+                        b
+                )
+            true
 
     let placeBomb () =
         let target = frontPoint player.getPosition player.getDirection
@@ -84,10 +105,14 @@ type Session(stageDefinitionlist: StageDefinition list) =
                 match newDir with
                 | Some dir -> 
                     player.setDirection dir
-                    let finalPos = getDestination playerPos dir
+                    let nextPos = frontPoint playerPos dir
 
-                    if finalPos <> playerPos then 
-                        player.setPosition finalPos
+                    match tryGetBombAt nextPos with
+                    | Some bomb -> 
+                        if tryPushBomb bomb dir then
+                            player.setPosition nextPos
+                    | None -> player.setPosition (getDestination playerPos dir)
+
                 | None -> ()
 
     member _.StageMap = stageMap
