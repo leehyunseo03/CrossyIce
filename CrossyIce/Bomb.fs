@@ -3,6 +3,15 @@ namespace CrossyIce
 type Bomb(initPosition: GridPoint) =
     inherit GameObject(initPosition, 10.0f)
 
+    let mutable state = Normal
+    member _.getState = state
+
+    member _.clearState() =
+        state <- Normal
+
+    member _.explodeState() =
+        state <- Boom
+
     member this.explode () =
         let center = this.getPosition
 

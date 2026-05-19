@@ -7,6 +7,7 @@ type Session(stageDefinitionlist: StageDefinition list) =
     let mutable stageMap = StageMap(stageDefinitionlist[stageIndex])
     
     let mutable bombs: Bomb list = []
+    
     let mutable remainBombCount = stageMap.getBombCount
 
     let player = Player(stageMap.StartPoint)
@@ -56,10 +57,20 @@ type Session(stageDefinitionlist: StageDefinition list) =
         else
             Arrived nextPos
     
+    let isBombExplode (bomb: Bomb) =
+        match bomb.getState with
+        | Boom when not bomb.isMoving -> true
+        | _ -> false
+
     let explodeBomb (bomb: Bomb) = 
         let explodeRange = bomb.explode()
         List.iter stageMap.BreakFragileWall explodeRange
         bombs <- bombs |> List.filter (fun b -> b <> bomb)
+
+    let explodePendingBombs () =
+        bombs
+        |> List.filter isBombExplode
+        |> List.iter explodeBomb
 
     let canPlaceBombAt point =
         stageMap.IsInside point
@@ -83,10 +94,11 @@ type Session(stageDefinitionlist: StageDefinition list) =
                 false
             else
                 bomb.setPosition finalBombPos
-                explodeBomb bomb
+                bomb.explodeState ()
                 true
+    
+    
         
-
     let placeBomb () =
         let target = frontPoint player.getPosition player.getDirection
 
@@ -103,7 +115,8 @@ type Session(stageDefinitionlist: StageDefinition list) =
         
     let updatePlayerMovement (frameTime: float32) =
         updateObjectVisualPositions frameTime
-        
+        explodePendingBombs ()
+
         if not player.isMoving && not (isAnyBombMoving ()) then 
             if checkStageClear player.getPosition then
               stageClear ()

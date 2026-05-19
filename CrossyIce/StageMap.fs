@@ -47,4 +47,4 @@ type StageMap(definition: StageDefinition) =
 
     member this.BreakFragileWall(point: GridPoint) =
         if this.IsInside(point) && cells[point.X, point.Y].IsBreakable then
-            cells[point.X, point.Y] <- Dry
+            cells[point.X, point.Y] <- Ice

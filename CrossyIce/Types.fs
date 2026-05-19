@@ -23,7 +23,11 @@ type Direction =
 type MoveResult =
     | Arrived of GridPoint
     | Blocked of GridPoint
-    
+
+type BombState =
+    | Normal
+    | Boom
+
 type CellStyle =
     { BaseColor: Color
       DrawDetail: int -> int -> int -> unit }

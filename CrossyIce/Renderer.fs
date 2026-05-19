@@ -136,6 +136,14 @@ type Renderer(windowWidth: int, windowHeight: int) =
             Raylib.DrawCircle(x - offset 10, y - offset 18, radius 3, Color.Black)
             Raylib.DrawEllipse(x + offset 2, y + offset 10, radius 8, radius 25, wingColor)
 
+    let Explosion (x: int) (y: int) (cellSize: int) =
+        let explosionColor = Color(255uy, 69uy, 0uy, 255uy)
+        Raylib.DrawCircle(x, y, float32 cellSize * 0.5f, explosionColor)
+
+    let bombExplosion (bomb: Bomb) (x: int) (y: int) (cellSize: int) =
+        let explosionArea = bomb.explode()
+        let explosionColor = Color(255uy, 69uy, 0uy, 255uy)
+
     let drawBomb (bomb: Bomb) (cellSize: int) (originX: int) (originY: int) =
         let position = bomb.getVisualPosition
 
