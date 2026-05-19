@@ -136,15 +136,16 @@ type Renderer(windowWidth: int, windowHeight: int) =
             Raylib.DrawCircle(x - offset 10, y - offset 18, radius 3, Color.Black)
             Raylib.DrawEllipse(x + offset 2, y + offset 10, radius 8, radius 25, wingColor)
 
-    let Explosion (x: int) (y: int) (cellSize: int) =
-        let explosionColor = Color(255uy, 69uy, 0uy, 255uy)
-        Raylib.DrawCircle(x, y, float32 cellSize * 0.5f, explosionColor)
+    let drawExplosionBomb (point: GridPoint) (cellSize: int) (originX: int) (originY: int) =
+        let x = originX + point.X * cellSize
+        let y = originY + point.Y * cellSize
+        let centerX = x + cellSize / 2
+        let centerY = y + cellSize / 2
 
-    let bombExplosion (bomb: Bomb) (x: int) (y: int) (cellSize: int) =
-        let explosionArea = bomb.explode()
-        let explosionColor = Color(255uy, 69uy, 0uy, 255uy)
+        Raylib.DrawCircle(centerX, centerY, float32 cellSize * 0.45f, Color(255uy, 91uy, 38uy, 220uy))
+        Raylib.DrawCircle(centerX, centerY, float32 cellSize * 0.25f, Color(255uy, 232uy, 120uy, 240uy))
 
-    let drawBomb (bomb: Bomb) (cellSize: int) (originX: int) (originY: int) =
+    let drawNormalBomb (bomb: Bomb) (cellSize: int) (originX: int) (originY: int) =
         let position = bomb.getVisualPosition
 
         let centerX = originX + int (position.X * float32 cellSize) + cellSize / 2
@@ -154,7 +155,14 @@ type Renderer(windowWidth: int, windowHeight: int) =
         Raylib.DrawCircle(centerX, centerY, radius, Color.Black)
         Raylib.DrawCircle(centerX - cellSize / 12, centerY - cellSize / 12, radius * 0.35f, Color.DarkGray)
         Raylib.DrawLine(centerX + cellSize / 8, centerY - cellSize / 5, centerX + cellSize / 4, centerY - cellSize / 3, Color.Orange)
-        
+    
+    let drawBomb (bomb: Bomb) cellSize originX originY =
+        match bomb.getState with
+        | Normal
+        | Pending -> drawNormalBomb bomb cellSize originX originY
+        | Boom _ ->
+            List.iter (fun point -> drawExplosionBomb point cellSize originX originY) (bomb.explode())
+            
     let drawPlayer (player: Player) (cellSize: int) (originX: int) (originY: int) =
         let position = player.getVisualPosition
         let direction = player.getDirection

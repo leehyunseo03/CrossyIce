@@ -26,7 +26,8 @@ type MoveResult =
 
 type BombState =
     | Normal
-    | Boom
+    | Pending
+    | Boom of float32
 
 type CellStyle =
     { BaseColor: Color

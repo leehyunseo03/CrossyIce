@@ -13,7 +13,13 @@ type Session(stageDefinitionlist: StageDefinition list) =
     let player = Player(stageMap.StartPoint)
     
     let isBombAt point =
-        bombs |> List.exists (fun bomb -> bomb.getPosition = point)
+        bombs
+        |> List.exists ( fun bomb ->
+            match bomb.getState with
+            | Boom _ -> false
+            | Normal
+            | Pending -> bomb.getPosition = point
+        )
 
     let isKeyPressed key : bool =
         Raylib.IsKeyPressed(key)
@@ -59,14 +65,21 @@ type Session(stageDefinitionlist: StageDefinition list) =
     
     let isBombExplode (bomb: Bomb) =
         match bomb.getState with
-        | Boom when not bomb.isMoving -> true
+        | Pending when not bomb.isMoving -> true
         | _ -> false
 
     let explodeBomb (bomb: Bomb) = 
         let explodeRange = bomb.explode()
-        List.iter stageMap.BreakFragileWall explodeRange
-        bombs <- bombs |> List.filter (fun b -> b <> bomb)
+        explodeRange |> List.iter (fun point -> stageMap.BreakFragileWall point)
+        bomb.explodeState ()
 
+    let updateBombExplosions frameTime =
+        bombs |> List.iter (fun bomb -> bomb.updateExplosion frameTime)
+
+        bombs <-
+            bombs
+            |> List.filter (fun bomb -> not bomb.isExplosionFinished)
+            
     let explodePendingBombs () =
         bombs
         |> List.filter isBombExplode
@@ -94,7 +107,7 @@ type Session(stageDefinitionlist: StageDefinition list) =
                 false
             else
                 bomb.setPosition finalBombPos
-                bomb.explodeState ()
+                bomb.pendingState ()
                 true
     
     
@@ -116,6 +129,8 @@ type Session(stageDefinitionlist: StageDefinition list) =
     let updatePlayerMovement (frameTime: float32) =
         updateObjectVisualPositions frameTime
         explodePendingBombs ()
+        updateBombExplosions frameTime
+
 
         if not player.isMoving && not (isAnyBombMoving ()) then 
             if checkStageClear player.getPosition then
