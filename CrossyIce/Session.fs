@@ -50,12 +50,17 @@ type Session(stageDefinitionlist: StageDefinition list) =
         let nextCell = stageMap.CellAt nextPos
 
         if checkCollision nextPos then
-            pos
+            Blocked pos
         elif nextCell.Slides then
             getDestination nextPos direction
         else
-            nextPos
+            Arrived nextPos
     
+    let explodeBomb (bomb: Bomb) = 
+        let explodeRange = bomb.explode()
+        List.iter stageMap.BreakFragileWall explodeRange
+        bombs <- bombs |> List.filter (fun b -> b <> bomb)
+
     let canPlaceBombAt point =
         stageMap.IsInside point
         && not (checkCollision point)
@@ -66,11 +71,21 @@ type Session(stageDefinitionlist: StageDefinition list) =
     let tryPushBomb (bomb:Bomb) direction =
         let finalBombPos = getDestination bomb.getPosition direction
 
-        if finalBombPos = bomb.getPosition then
-            false
-        else
-            bomb.setPosition finalBombPos
-            true
+        match finalBombPos with
+        | Arrived finalBombPos ->
+            if finalBombPos = bomb.getPosition then
+                false
+            else
+                bomb.setPosition finalBombPos
+                true
+        | Blocked finalBombPos ->
+            if finalBombPos = bomb.getPosition then
+                false
+            else
+                bomb.setPosition finalBombPos
+                explodeBomb bomb
+                true
+        
 
     let placeBomb () =
         let target = frontPoint player.getPosition player.getDirection
@@ -115,8 +130,11 @@ type Session(stageDefinitionlist: StageDefinition list) =
                             player.setPosition nextPos
                     | None -> 
                         let finalPos = getDestination playerPos dir
-                        if finalPos <> playerPos then
-                            player.setPosition finalPos
+                        match finalPos with
+                        | Arrived finalPos
+                        | Blocked finalPos -> 
+                            if finalPos <> playerPos then
+                                player.setPosition finalPos
 
                 | None -> ()
 

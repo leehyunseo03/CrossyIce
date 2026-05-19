@@ -38,9 +38,13 @@ type StageMap(definition: StageDefinition) =
         && point.Y >= 0
         && point.X < width
         && point.Y < height
-
+    
     member this.CellAt(point: GridPoint) =
         if this.IsInside(point) then
             cells[point.X, point.Y]
         else
             SolidWall
+
+    member this.BreakFragileWall(point: GridPoint) =
+        if this.IsInside(point) && cells[point.X, point.Y].IsBreakable then
+            cells[point.X, point.Y] <- Dry

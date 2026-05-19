@@ -20,6 +20,10 @@ type Direction =
     | Right
     | Left
 
+type MoveResult =
+    | Arrived of GridPoint
+    | Blocked of GridPoint
+    
 type CellStyle =
     { BaseColor: Color
       DrawDetail: int -> int -> int -> unit }
