@@ -156,12 +156,13 @@ type Renderer(windowWidth: int, windowHeight: int) =
         Raylib.DrawCircle(centerX - cellSize / 12, centerY - cellSize / 12, radius * 0.35f, Color.DarkGray)
         Raylib.DrawLine(centerX + cellSize / 8, centerY - cellSize / 5, centerX + cellSize / 4, centerY - cellSize / 3, Color.Orange)
     
-    let drawBomb (bomb: Bomb) cellSize originX originY =
+    let drawBomb (bomb: Bomb) (stageMap: StageMap) cellSize originX originY =
         match bomb.getState with
         | Normal
         | Pending -> drawNormalBomb bomb cellSize originX originY
         | Boom _ ->
-            List.iter (fun point -> drawExplosionBomb point cellSize originX originY) (bomb.explode())
+            let exceptSolid = List.filter (fun point -> stageMap.CellAt(point) <> SolidWall) (bomb.explode())
+            List.iter (fun point -> drawExplosionBomb point cellSize originX originY) exceptSolid
             
     let drawPlayer (player: Player) (cellSize: int) (originX: int) (originY: int) =
         let position = player.getVisualPosition
@@ -196,6 +197,6 @@ type Renderer(windowWidth: int, windowHeight: int) =
         
     member _.Draw(stageMap: StageMap) (player: Player) (bombs: Bomb list) (bombCount: int)=
         let cellSize, originX, originY = drawMap stageMap
-        bombs |> List.iter (fun bomb -> drawBomb bomb cellSize originX originY)
+        bombs |> List.iter (fun bomb -> drawBomb bomb stageMap cellSize originX originY)
         drawPlayer player cellSize originX originY
         drawBombCounter bombCount cellSize originX originY stageMap
