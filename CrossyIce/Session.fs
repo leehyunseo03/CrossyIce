@@ -82,7 +82,10 @@ type Session(stageDefinitionlist: StageDefinition list) =
     let explodeBomb (bomb: Bomb) = 
         let explodeRange = bomb.explode()
         explodeRange |> List.iter (fun point -> stageMap.BreakFragileWall point)
-        bomb.explodeState ()
+        if explodeRange |> List.exists (fun point -> player.getPosition = point) then
+            resetStage ()
+        else
+            bomb.explodeState ()
 
     let updateBombExplosions frameTime =
         bombs |> List.iter (fun bomb -> bomb.updateExplosion frameTime)
