@@ -101,7 +101,14 @@ type Session(stageDefinitionlist: StageDefinition list) =
 
     let canPlaceBombAt point =
         stageMap.IsInside point
-        && not (checkCollision point)
+        && not (isBombAt point)
+        && match stageMap.CellAt point with
+           | Dry -> true
+           | Ice -> true
+           | Start -> false
+           | Goal -> false
+           | SolidWall -> false
+           | FragileWall -> false
 
     let tryGetBombAt point =
         bombs |> List.tryFind (fun bomb -> bomb.getPosition = point)
