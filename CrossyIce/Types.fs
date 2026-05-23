@@ -1,6 +1,11 @@
 namespace CrossyIce
 open Raylib_cs
 
+type GameState =
+    | Playing
+    | StageClear of float32
+    | GameClear
+
 type StageDefinition =
     { Name: string
       Layout: string list 

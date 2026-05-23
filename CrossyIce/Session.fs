@@ -3,6 +3,9 @@ namespace CrossyIce
 open Raylib_cs
 
 type Session(stageDefinitionlist: StageDefinition list) =
+    let mutable gameState = Playing
+    let stageClearTime = 2.0f
+
     let mutable stageIndex = 0
     let mutable stageMap = StageMap(stageDefinitionlist[stageIndex])
     
@@ -25,11 +28,15 @@ type Session(stageDefinitionlist: StageDefinition list) =
         Raylib.IsKeyPressed(key)
     
     let stageClear () = 
-        stageIndex <- stageIndex + 1
-        stageMap <- StageMap(stageDefinitionlist[stageIndex])
-        bombs <- []
-        remainBombCount <- stageMap.getBombCount
-        player.resetPosition stageMap.StartPoint
+        if stageIndex + 1 < stageDefinitionlist.Length then
+            stageIndex <- stageIndex + 1
+            stageMap <- StageMap(stageDefinitionlist[stageIndex])
+            bombs <- []
+            remainBombCount <- stageMap.getBombCount
+            player.resetPosition stageMap.StartPoint
+            gameState <- Playing
+        else 
+            gameState <- GameClear
 
     let checkStageClear (point: GridPoint) = 
         let cellType = stageMap.CellAt point 
@@ -109,8 +116,6 @@ type Session(stageDefinitionlist: StageDefinition list) =
                 bomb.setPosition finalBombPos
                 bomb.pendingState ()
                 true
-    
-    
         
     let placeBomb () =
         let target = frontPoint player.getPosition player.getDirection
@@ -130,11 +135,9 @@ type Session(stageDefinitionlist: StageDefinition list) =
         updateObjectVisualPositions frameTime
         explodePendingBombs ()
         updateBombExplosions frameTime
-
-
         if not player.isMoving && not (isAnyBombMoving ()) then 
             if checkStageClear player.getPosition then
-              stageClear ()
+                gameState <- StageClear stageClearTime
             elif isKeyPressed KeyboardKey.Space then
                 placeBomb ()
             else
@@ -166,6 +169,8 @@ type Session(stageDefinitionlist: StageDefinition list) =
 
                 | None -> ()
 
+    member _.GameState = gameState
+    member _.StageIndex = stageIndex
     member _.StageMap = stageMap
     member _.Player = player
     member _.Bombs = bombs
@@ -173,4 +178,15 @@ type Session(stageDefinitionlist: StageDefinition list) =
     member _.getRemainBombCount = remainBombCount
 
     member _.Update(frameTime: float32) =
-        updatePlayerMovement(frameTime)
+        match gameState with
+        | Playing -> updatePlayerMovement(frameTime)
+        | StageClear remainingTime ->
+            updateObjectVisualPositions frameTime
+            updateBombExplosions frameTime
+
+            let newRemainingTime = remainingTime - frameTime
+            if newRemainingTime <= 0.0f then
+                stageClear ()
+            else
+                gameState <- StageClear newRemainingTime
+        | GameClear -> ()

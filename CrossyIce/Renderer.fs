@@ -195,8 +195,20 @@ type Renderer(windowWidth: int, windowHeight: int) =
 
         Raylib.DrawText(sprintf "x %d" bombCount, x + 60, y + 15, 25, textColor)
         
-    member _.Draw(stageMap: StageMap) (player: Player) (bombs: Bomb list) (bombCount: int)=
-        let cellSize, originX, originY = drawMap stageMap
-        bombs |> List.iter (fun bomb -> drawBomb bomb stageMap cellSize originX originY)
-        drawPlayer player cellSize originX originY
-        drawBombCounter bombCount cellSize originX originY stageMap
+    member _.Draw (gameState: GameState) (stageMap: StageMap) (player: Player) (bombs: Bomb list) (bombCount: int)=
+        match gameState with
+        | Playing -> 
+            let cellSize, originX, originY = drawMap stageMap
+            bombs |> List.iter (fun bomb -> drawBomb bomb stageMap cellSize originX originY)
+            drawPlayer player cellSize originX originY
+            drawBombCounter bombCount cellSize originX originY stageMap
+
+        | StageClear time ->
+            let text = "Stage Clear!"
+            let textWidth = Raylib.MeasureText(text, 30)
+            Raylib.DrawText(text, (windowWidth - textWidth) / 2, windowHeight / 2 - 20, 30, Color(82uy, 89uy, 102uy, 255uy))
+
+        | GameClear ->
+            let text = "Game Clear!"
+            let textWidth = Raylib.MeasureText(text, 30)
+            Raylib.DrawText(text, (windowWidth - textWidth) / 2, windowHeight / 2 - 20, 30, Color(82uy, 89uy, 102uy, 255uy))
