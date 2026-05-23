@@ -27,14 +27,18 @@ type Session(stageDefinitionlist: StageDefinition list) =
     let isKeyPressed key : bool =
         Raylib.IsKeyPressed(key)
     
+    let resetStage () = 
+        stageMap <- StageMap(stageDefinitionlist[stageIndex])
+        bombs <- []
+        remainBombCount <- stageMap.getBombCount
+        player.resetPosition stageMap.StartPoint
+        player.setDirection Front
+        gameState <- Playing
+
     let stageClear () = 
         if stageIndex + 1 < stageDefinitionlist.Length then
             stageIndex <- stageIndex + 1
-            stageMap <- StageMap(stageDefinitionlist[stageIndex])
-            bombs <- []
-            remainBombCount <- stageMap.getBombCount
-            player.resetPosition stageMap.StartPoint
-            gameState <- Playing
+            resetStage ()
         else 
             gameState <- GameClear
 
@@ -178,15 +182,18 @@ type Session(stageDefinitionlist: StageDefinition list) =
     member _.getRemainBombCount = remainBombCount
 
     member _.Update(frameTime: float32) =
-        match gameState with
-        | Playing -> updatePlayerMovement(frameTime)
-        | StageClear remainingTime ->
-            updateObjectVisualPositions frameTime
-            updateBombExplosions frameTime
+        if isKeyPressed KeyboardKey.R then
+            resetStage ()
+        else
+            match gameState with
+            | Playing -> updatePlayerMovement(frameTime)
+            | StageClear remainingTime ->
+                updateObjectVisualPositions frameTime
+                updateBombExplosions frameTime
 
-            let newRemainingTime = remainingTime - frameTime
-            if newRemainingTime <= 0.0f then
-                stageClear ()
-            else
-                gameState <- StageClear newRemainingTime
-        | GameClear -> ()
+                let newRemainingTime = remainingTime - frameTime
+                if newRemainingTime <= 0.0f then
+                    stageClear ()
+                else
+                    gameState <- StageClear newRemainingTime
+            | GameClear -> ()
