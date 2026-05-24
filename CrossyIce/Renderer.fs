@@ -171,8 +171,8 @@ type Renderer(windowWidth: int, windowHeight: int) =
         let y = originY + int (position.Y * float32 cellSize) + (cellSize / 2)
         drawPenguin x y direction cellSize
 
-    let drawStageCounter (stageMap: StageMap) (stageIndex: int) (stageTotalCount: int) (cellSize: int) (originX: int) (originY: int) =
-        let text = sprintf "Stage %d / %d" (stageIndex + 1) stageTotalCount
+    let drawStageCounter (stageMap: StageMap) (stageIndex: int) (cellSize: int) (originX: int) (originY: int) =
+        let text = sprintf "Stage : %d " (stageIndex + 1)
         let textColor = Color(82uy, 89uy, 102uy, 255uy)
         Raylib.DrawText(text, originX, originY - 30, 25, textColor)
 
@@ -199,22 +199,50 @@ type Renderer(windowWidth: int, windowHeight: int) =
         drawNormalBomb iconBomb iconSize iconX iconY
 
         Raylib.DrawText(sprintf "x %d" bombCount, x + 60, y + 15, 25, textColor)
+    
+    let restartButtonRect =
+        Rectangle(float32 (windowWidth / 2 - 60), float32 (windowHeight / 2 + 60), 120.0f, 44.0f)
+
+    let exitButtonRect =
+        Rectangle(float32 (windowWidth / 2 - 60), float32 (windowHeight / 2+20), 120.0f, 44.0f)
+
+    let drawButton (rect: Rectangle) (text: string) =
+        Raylib.DrawRectangleRec(rect, Color(82uy, 89uy, 102uy, 255uy))
+        let fontSize = 24
+        let textWidth = Raylib.MeasureText(text, fontSize)
+        let textX = int rect.X + (int rect.Width - textWidth) / 2
+        let textY = int rect.Y + (int rect.Height - fontSize) / 2
+        Raylib.DrawText(text, textX, textY, fontSize, Color.White)
         
-    member _.Draw (gameState: GameState) (stageMap: StageMap) (stageIndex: int) (stageTotalCount: int) (player: Player) (bombs: Bomb list) (bombCount: int)=
+    let drawRestart () =
+        let title = "Restart?"
+        let fontSize = 40
+        let textWidth = Raylib.MeasureText(title, fontSize)
+
+        Raylib.DrawText(title, (windowWidth - textWidth) / 2, windowHeight / 2 - 80, fontSize, Color(82uy, 89uy, 102uy, 255uy))
+        drawButton restartButtonRect "Restart"
+        drawButton exitButtonRect "EXIT"
+
+    let drawClear () = 
+        let text = "Game Clear"
+        let textWidth = Raylib.MeasureText(text, 30)
+        Raylib.DrawText(text, (windowWidth - textWidth) / 2, windowHeight / 2 - 20, 30, Color(82uy, 89uy, 102uy, 255uy))
+        drawButton exitButtonRect "EXIT"
+
+    member _.Draw (gameState: GameState) (stageMap: StageMap) (stageIndex: int) (player: Player) (bombs: Bomb list) (bombCount: int)=
         match gameState with
         | Playing -> 
             let cellSize, originX, originY = drawMap stageMap
             bombs |> List.iter (fun bomb -> drawBomb bomb stageMap cellSize originX originY)
             drawPlayer player cellSize originX originY
-            drawStageCounter stageMap stageIndex stageTotalCount cellSize originX originY
+            drawStageCounter stageMap stageIndex cellSize originX originY
             drawBombCounter bombCount cellSize originX originY stageMap
-
+        | Restart ->
+            drawRestart ()
         | StageClear time ->
             let text = "Stage Clear!"
             let textWidth = Raylib.MeasureText(text, 30)
             Raylib.DrawText(text, (windowWidth - textWidth) / 2, windowHeight / 2 - 20, 30, Color(82uy, 89uy, 102uy, 255uy))
-
         | GameClear ->
-            let text = "Game Clear!"
-            let textWidth = Raylib.MeasureText(text, 30)
-            Raylib.DrawText(text, (windowWidth - textWidth) / 2, windowHeight / 2 - 20, 30, Color(82uy, 89uy, 102uy, 255uy))
+            drawClear ()
+        | Exit -> ()

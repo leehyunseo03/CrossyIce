@@ -3,8 +3,10 @@ open Raylib_cs
 
 type GameState =
     | Playing
+    | Restart
     | StageClear of float32
     | GameClear
+    | Exit
 
 type StageDefinition =
     { Name: string

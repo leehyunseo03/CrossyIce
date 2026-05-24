@@ -2,7 +2,7 @@ namespace CrossyIce
 
 open Raylib_cs
 
-type Session(stageDefinitionlist: StageDefinition list) =
+type Session (stageDefinitionlist: StageDefinition list, windowWidth: int, windowHeight: int) =
     let mutable gameState = Playing
     let stageClearTime = 2.0f
 
@@ -27,6 +27,12 @@ type Session(stageDefinitionlist: StageDefinition list) =
     let isKeyPressed key : bool =
         Raylib.IsKeyPressed(key)
     
+    let restartButtonRect =
+        Rectangle(float32 (windowWidth / 2 - 60), float32 (windowHeight / 2 + 60), 120.0f, 44.0f)
+
+    let exitButtonRect =
+        Rectangle(float32 (windowWidth / 2 - 60), float32 (windowHeight / 2+20), 120.0f, 44.0f)
+
     let resetStage () = 
         stageMap <- StageMap(stageDefinitionlist[stageIndex])
         bombs <- []
@@ -83,7 +89,7 @@ type Session(stageDefinitionlist: StageDefinition list) =
         let explodeRange = bomb.explode()
         explodeRange |> List.iter (fun point -> stageMap.BreakFragileWall point)
         if explodeRange |> List.exists (fun point -> player.getPosition = point) then
-            resetStage ()
+            gameState <- Restart
         else
             bomb.explodeState ()
 
@@ -140,6 +146,10 @@ type Session(stageDefinitionlist: StageDefinition list) =
     
     let isAnyBombMoving () =
         bombs |> List.exists (fun bomb -> bomb.isMoving)
+
+    let isMouseClicked (rect: Rectangle) =
+        Raylib.IsMouseButtonPressed(MouseButton.Left)
+        && Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), rect)
 
     let updateObjectVisualPositions frameTime =
         player.setVisualPosition frameTime
@@ -198,6 +208,11 @@ type Session(stageDefinitionlist: StageDefinition list) =
         else
             match gameState with
             | Playing -> updatePlayerMovement(frameTime)
+            | Restart -> 
+                if isMouseClicked restartButtonRect then
+                    resetStage ()
+                elif isMouseClicked exitButtonRect then
+                    gameState <- Exit
             | StageClear remainingTime ->
                 updateObjectVisualPositions frameTime
                 updateBombExplosions frameTime
@@ -207,4 +222,7 @@ type Session(stageDefinitionlist: StageDefinition list) =
                     stageClear ()
                 else
                     gameState <- StageClear newRemainingTime
-            | GameClear -> ()
+            | GameClear -> 
+                if isMouseClicked exitButtonRect then
+                    gameState <- Exit
+            | Exit -> ()
