@@ -170,7 +170,12 @@ type Renderer(windowWidth: int, windowHeight: int) =
         let x = originX + int (position.X * float32 cellSize) + (cellSize / 2)
         let y = originY + int (position.Y * float32 cellSize) + (cellSize / 2)
         drawPenguin x y direction cellSize
-    
+
+    let drawStageCounter (stageMap: StageMap) (stageIndex: int) (stageTotalCount: int) (cellSize: int) (originX: int) (originY: int) =
+        let text = sprintf "Stage %d / %d" (stageIndex + 1) stageTotalCount
+        let textColor = Color(82uy, 89uy, 102uy, 255uy)
+        Raylib.DrawText(text, originX, originY - 30, 25, textColor)
+
     let drawBombCounter (bombCount: int) (cellSize: int) (originX: int) (originY: int) (stageMap: StageMap) =
         let boardRight = originX + stageMap.Width * cellSize
         let boardBottom = originY + stageMap.Height * cellSize
@@ -195,12 +200,13 @@ type Renderer(windowWidth: int, windowHeight: int) =
 
         Raylib.DrawText(sprintf "x %d" bombCount, x + 60, y + 15, 25, textColor)
         
-    member _.Draw (gameState: GameState) (stageMap: StageMap) (player: Player) (bombs: Bomb list) (bombCount: int)=
+    member _.Draw (gameState: GameState) (stageMap: StageMap) (stageIndex: int) (stageTotalCount: int) (player: Player) (bombs: Bomb list) (bombCount: int)=
         match gameState with
         | Playing -> 
             let cellSize, originX, originY = drawMap stageMap
             bombs |> List.iter (fun bomb -> drawBomb bomb stageMap cellSize originX originY)
             drawPlayer player cellSize originX originY
+            drawStageCounter stageMap stageIndex stageTotalCount cellSize originX originY
             drawBombCounter bombCount cellSize originX originY stageMap
 
         | StageClear time ->

@@ -185,6 +185,7 @@ type Session(stageDefinitionlist: StageDefinition list) =
 
     member _.GameState = gameState
     member _.StageIndex = stageIndex
+    member _.StageTotalCount = stageDefinitionlist.Length
     member _.StageMap = stageMap
     member _.Player = player
     member _.Bombs = bombs

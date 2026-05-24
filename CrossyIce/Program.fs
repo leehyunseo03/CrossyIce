@@ -15,7 +15,7 @@ module Program =
     let render () =
         Raylib.BeginDrawing ()
         Raylib.ClearBackground (Color(226uy, 235uy, 244uy, 255uy))
-        renderer.Draw gameSession.GameState gameSession.StageMap gameSession.Player gameSession.Bombs gameSession.getRemainBombCount  
+        renderer.Draw gameSession.GameState gameSession.StageMap gameSession.StageIndex gameSession.StageTotalCount gameSession.Player gameSession.Bombs gameSession.getRemainBombCount  
         Raylib.EndDrawing ()
 
     let cleanup () = Raylib.CloseWindow()
