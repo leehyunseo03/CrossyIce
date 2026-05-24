@@ -25,7 +25,7 @@ type Session (stageDefinitionlist: StageDefinition list, windowWidth: int, windo
         )
 
     let isKeyPressed key : bool =
-        Raylib.IsKeyPressed(key)
+        CBool.op_Implicit(Raylib.IsKeyPressed(key))
     
     let restartButtonRect =
         Rectangle(float32 (windowWidth / 2 - 60), float32 (windowHeight / 2 + 60), 120.0f, 44.0f)
@@ -148,8 +148,8 @@ type Session (stageDefinitionlist: StageDefinition list, windowWidth: int, windo
         bombs |> List.exists (fun bomb -> bomb.isMoving)
 
     let isMouseClicked (rect: Rectangle) =
-        Raylib.IsMouseButtonPressed(MouseButton.Left)
-        && Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), rect)
+        CBool.op_Implicit(Raylib.IsMouseButtonPressed(MouseButton.Left))
+        && CBool.op_Implicit(Raylib.CheckCollisionPointRec(Raylib.GetMousePosition(), rect))
 
     let updateObjectVisualPositions frameTime =
         player.setVisualPosition frameTime
