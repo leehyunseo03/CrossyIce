@@ -1,6 +1,8 @@
 # CrossyIce
 
-A GUI Modified Ice Sliding Puzzle game built with **F# / .NET 10**.
+A GUI-based modified Ice Sliding Puzzle game built with **F# / .NET 10** and **Raylib_cs**.
+
+In CrossyIce, the player controls a character on a top-down grid map. The goal is to reach the destination tile by moving across dry land, sliding over ice, and using a limited number of bombs to destroy cracked obstacles.
 
 ---
 
@@ -8,10 +10,19 @@ A GUI Modified Ice Sliding Puzzle game built with **F# / .NET 10**.
 
 ### Prerequisites
 
+- [GIT](https://git-scm.com/install)   
+  Verify with: `git --version` 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)  
   Verify with: `dotnet --version` (should show `10.x.x`)
 
 ### Run
+
+#### Run by downloading the code
+```
+git clone https://github.com/leehyunseo03/CrossyIce.git
+cd CrossyIce
+```
+Then run the project based on your operating system : 
 ```bash
 # Windows
 run.bat
@@ -22,6 +33,19 @@ chmod +x run.sh
 
 # Or directly
 dotnet run
+``` 
+
+#### Run by executing the file
+1. Open the **Releases** Tab of this repository
+2. Download the latest release for your opeating system
+3. unzip the downloaded file
+4. Execute the program
+```bash
+# Windows
+CrossyIce.exe
+
+# Unix / macOS 
+./CrossyIce
 ```
 
 ### Build
@@ -33,16 +57,33 @@ dotnet build
 
 ```bash
 # Windows x64
-dotnet publish -c Release -r win-x64 --self-contained
+dotnet publish -c Release -r win-x64 --self-contained true -o publish/win-x64
 
 # Linux x64
-dotnet publish -c Release -r linux-x64 --self-contained
+dotnet publish -c Release -r linux-x64 --self-contained true -o publish/linux-x64
+
+# MacOS x64
+dotnet publish -c Release -r osx-x64 --self-contained true -o publish/osx-x64
+
+# MacOS ARM64
+dotnet publish -c Release -r osx-arm64 --self-contained true -o publish/osx-arm64
 ```
 
 ---
 
 ## How to Play
+
+### Objective 
+Move the player from the starting tile to the goal tile. Each stage contains a different grid layout with dry tile, ice tile, walls, cracked obstacles, and a destination tile. You can use bomb to break the cracked obstacles and make the path.
+
+The stage is cleared when the player reaches the goal tile. After clearing the final stage, the game displays a Game screen.
+
+### Controls
+
+
 ---
+
+
 
 ## Project Structure
 ```
