@@ -76,7 +76,7 @@ dotnet publish -c Release -r osx-arm64 --self-contained true -o publish/osx-arm6
 ### Objective 
 Move the player from the starting tile to the goal tile. Each stage contains a different grid layout with dry tile, ice tile, walls, cracked obstacles, and a destination tile. You can use bomb to break the cracked obstacles and make the path.
 
-The stage is cleared when the player reaches the goal tile. After clearing the final stage, the game displays a Game screen.
+The stage is cleared when the player reaches the goal tile. After clearing the final stage, the game displays a "Game Clear" screen.
 
 ### Controls
 | Key | Action |
@@ -265,8 +265,7 @@ type CellKind =
 ```
 Represents the cell type used to build each stage
 
---- 
-Module Overview
+### Module Overview
 | Module | Responsibility |
 | --- | --- |
 | Types | Defines shared data types used across the game |
