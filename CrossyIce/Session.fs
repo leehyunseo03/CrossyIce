@@ -40,6 +40,15 @@ type Session (stageDefinitionlist: StageDefinition list, windowWidth: int, windo
         player.resetPosition stageMap.StartPoint
         player.setDirection Front
         gameState <- Playing
+    
+    let isLastStage () =
+        stageIndex + 1 >= stageDefinitionlist.Length
+
+    let completeCurrentStage () =
+        if isLastStage () then
+            gameState <- GameClear
+        else
+            gameState <- StageClear stageClearTime
 
     let stageClear () = 
         if stageIndex + 1 < stageDefinitionlist.Length then
@@ -73,7 +82,7 @@ type Session (stageDefinitionlist: StageDefinition list, windowWidth: int, windo
         let nextCell = stageMap.CellAt nextPos
 
         if isBombAt nextPos then
-            BlockedByBomb nextPos
+            BlockedByBomb pos
         elif checkCollision nextPos then
             Blocked pos
         elif nextCell.Slides then
@@ -168,7 +177,7 @@ type Session (stageDefinitionlist: StageDefinition list, windowWidth: int, windo
         updateBombExplosions frameTime
         if not player.isMoving && not (isAnyBombMoving ()) then 
             if checkStageClear player.getPosition then
-                gameState <- StageClear stageClearTime
+                completeCurrentStage ()
             elif isKeyPressed KeyboardKey.Space then
                 placeBomb ()
             else
