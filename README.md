@@ -317,7 +317,7 @@ Used LLM : Gemini 3.1 Pro
 ```
 Using F# raylib_cs.py design the Board map with grid. each grid cell has type. ice(sky blue), land(white), fragile wall, wall, and start point and goal point. make start point as green dot and goal point as yellow dot. emphasize goal point. make it 2d
 ```
-> I accept all design LLM made, however, the design of Fragile wall was too complex, so I manually remove the details.
+> I accept all design LLM made, however, the design of Fragile wall was too complex, so I manually remove the details. Also, I fix the code details like width and height to fit in my code 
 
 2. Character Design   
 Used LLM : Gemini 3.1 Pro   
@@ -334,4 +334,7 @@ Using f# and Raylib, draw Big simple bomb in 2d. make it simple as possible. use
 
 > It gives very small bomb. so I manually increase its size
 
-LLM generated initial visual ideas, I manually adapted them to my project. I handle full game logic/state transitions.
+
+I used an LLM for visual design ideas, such as the grid, character, and bomb appearance. 
+Some of the generated designs were too detailed and complex for this project, so I simplified them manually. The LLM also did not provide code that fit my project structure exactly, so I adjusted the positions, sizes, and drawing logic to match my own code.
+The game rules, movement logic, bomb rules, stage progression, level design, bomb explosion design, state transitions, total structure were implemented and designed manually.
