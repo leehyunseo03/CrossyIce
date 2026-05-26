@@ -59,7 +59,6 @@ type Session (stageDefinitionlist: StageDefinition list, windowWidth: int, windo
         match cellType with
         | SolidWall -> true
         | FragileWall -> true
-        | _ when isBombAt point -> true
         | _ -> false
 
     let frontPoint (pos: GridPoint) (direction: Direction) =
@@ -73,7 +72,9 @@ type Session (stageDefinitionlist: StageDefinition list, windowWidth: int, windo
         let nextPos = frontPoint pos direction
         let nextCell = stageMap.CellAt nextPos
 
-        if checkCollision nextPos then
+        if isBombAt nextPos then
+            BlockedByBomb nextPos
+        elif checkCollision nextPos then
             Blocked pos
         elif nextCell.Slides then
             getDestination nextPos direction
@@ -136,6 +137,12 @@ type Session (stageDefinitionlist: StageDefinition list, windowWidth: int, windo
                 bomb.setPosition finalBombPos
                 bomb.pendingState ()
                 true
+        | BlockedByBomb finalBombPos ->
+            if finalBombPos = bomb.getPosition then
+                false
+            else
+                bomb.setPosition finalBombPos
+                true
         
     let placeBomb () =
         let target = frontPoint player.getPosition player.getDirection
@@ -188,6 +195,9 @@ type Session (stageDefinitionlist: StageDefinition list, windowWidth: int, windo
                         match finalPos with
                         | Arrived finalPos
                         | Blocked finalPos -> 
+                            if finalPos <> playerPos then
+                                player.setPosition finalPos
+                        | BlockedByBomb finalPos -> 
                             if finalPos <> playerPos then
                                 player.setPosition finalPos
 

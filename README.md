@@ -239,6 +239,7 @@ Represents player facing direction
 type MoveResult =
     | Arrived of GridPoint
     | Blocked of GridPoint
+    | BlockedByBomb of GridPoint
 ```
 represents movement result of bomb after sliding
 
@@ -316,15 +317,21 @@ Used LLM : Gemini 3.1 Pro
 ```
 Using F# raylib_cs.py design the Board map with grid. each grid cell has type. ice(sky blue), land(white), fragile wall, wall, and start point and goal point. make start point as green dot and goal point as yellow dot. emphasize goal point. make it 2d
 ```
+> I accept all design LLM made, however, the design of Fragile wall was too complex, so I manually remove the details.
 
 2. Character Design   
 Used LLM : Gemini 3.1 Pro   
 ```
 Using f# and Raylib, draw cute simple penguin in 2d that facing front, left, right, and backward. make simple as possible.
 ```
+> I add sentence "make simple as possible" to prevent LLM from designing complex penguin, However, it still designed complex penguin, so i manually erase some parts of penguins. ex) peak design, eye design
 
 3. Bomb Design
 Used LLM : Gemini 3.1 Pro
 ```
 Using f# and Raylib, draw Big simple bomb in 2d. make it simple as possible. use cellsize, centerx, centery, radius as given parameter. make as simple as possible. use less than 5 lines. do not use external library
 ```
+
+> It gives very small bomb. so I manually increase its size
+
+LLM generated initial visual ideas, I manually adapted them to my project. I handle full game logic/state transitions.

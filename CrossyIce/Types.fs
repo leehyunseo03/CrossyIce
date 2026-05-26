@@ -30,6 +30,7 @@ type Direction =
 type MoveResult =
     | Arrived of GridPoint
     | Blocked of GridPoint
+    | BlockedByBomb of GridPoint
 
 type BombState =
     | Normal
