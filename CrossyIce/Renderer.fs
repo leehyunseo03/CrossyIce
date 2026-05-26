@@ -198,7 +198,7 @@ type Renderer(windowWidth: int, windowHeight: int) =
 
         drawNormalBomb iconBomb iconSize iconX iconY
 
-        Raylib.DrawText(sprintf "x %d" bombCount, x + 60, y + 15, 25, textColor)
+        Raylib.DrawText(sprintf ": %d" bombCount, x + 60, y + 15, 25, textColor)
     
     let restartButtonRect =
         Rectangle(float32 (windowWidth / 2 - 60), float32 (windowHeight / 2 + 60), 120.0f, 44.0f)
