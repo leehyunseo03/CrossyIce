@@ -36,6 +36,7 @@ dotnet run
 ``` 
 
 #### Run by executing the file
+**Only for Windows & Unix!**
 1. Open the **Releases** Tab of this repository
 2. Download the latest release for your opeating system
 3. unzip the downloaded file
@@ -44,7 +45,7 @@ dotnet run
 # Windows
 CrossyIce.exe
 
-# Unix / macOS 
+# Unix
 ./CrossyIce
 ```
 
@@ -61,12 +62,6 @@ dotnet publish -c Release -r win-x64 --self-contained true -o publish/win-x64
 
 # Linux x64
 dotnet publish -c Release -r linux-x64 --self-contained true -o publish/linux-x64
-
-# MacOS x64
-dotnet publish -c Release -r osx-x64 --self-contained true -o publish/osx-x64
-
-# MacOS ARM64
-dotnet publish -c Release -r osx-arm64 --self-contained true -o publish/osx-arm64
 ```
 
 ---
