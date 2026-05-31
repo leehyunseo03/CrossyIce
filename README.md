@@ -36,7 +36,7 @@ dotnet run
 ``` 
 
 #### Run by executing the file
-**Only for Windows & Unix!**
+- **Only for Windows & Unix!**
 1. Open the **Releases** Tab of this repository
 2. Download the latest release for your opeating system
 3. unzip the downloaded file
