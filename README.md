@@ -46,6 +46,7 @@ dotnet run
 CrossyIce.exe
 
 # Unix
+chmod +x CrossyIce
 ./CrossyIce
 ```
 
