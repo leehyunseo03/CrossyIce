@@ -288,7 +288,8 @@ Represents the cell type used to build each stage
 - Bombs slide on ice using the same directional sliding rule
 - A bomb explodes when it slides into a blocked stopping condition
 - Explosion of bomb destroy cracked obstacles in a cross shaped range
-- If the player is caught in a bomb explosion, it immediately restart the stage
+- If the cracked obstacles exploded, then it turns into ice tile
+- If the player is caught in a bomb explosion, it shows "Restart" screen with restart button
 - Pressing `R` restarts the current stage at any time
 - Clear the final stage displays the "Game Clear" screen
 
