@@ -9,7 +9,6 @@ In CrossyIce, the player controls a character on a top-down grid map. The goal i
 ## Getting Started
 
 ### Prerequisites
-
 - [GIT](https://git-scm.com/install)   
   Verify with: `git --version` 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)  
@@ -17,7 +16,7 @@ In CrossyIce, the player controls a character on a top-down grid map. The goal i
 
 ### Run
 
-#### Run by downloading the code
+#### Running from source
 ```
 git clone https://github.com/leehyunseo03/CrossyIce.git
 cd CrossyIce
@@ -27,7 +26,7 @@ Then run the project based on your operating system :
 # Windows
 run.bat
 
-# Unix / macOS
+# Linux x64 / macOS
 chmod +x run.sh
 ./run.sh
 
@@ -35,20 +34,30 @@ chmod +x run.sh
 dotnet run
 ``` 
 
-#### Run by executing the file
-- **Only for Windows & Unix!**
+#### Running from executing the file
+- **Only for Windows x64 and Linux x64 releases**
+
 1. Open the **Releases** Tab of this repository
-2. Download the latest release for your opeating system
-3. unzip the downloaded file
+2. Download the latest release for your operating system
+3. Unzip the downloaded file
 4. Execute the program
+
 ```bash
 # Windows
 CrossyIce.exe
 
-# Unix
+# Linux x64
 chmod +x CrossyIce
 ./CrossyIce
 ```
+
+> **Note for Linux Users**: The Linux release executable includes the .NET runtime and Raylib native library, but it still requires a graphical desktop/display environment. If the game does not start on minimal Linux, WSL, or a headless system, install common Raylib runtime dependencies:
+>
+> ```bash
+> sudo apt install libasound2 libx11-6 libxrandr2 libxi6 libgl1 libglu1-mesa libxcursor1 libxinerama1
+> ```
+>
+> For WSL, use WSLg or another X server/display setup because the game opens a graphical window.
 
 ### Build
 ```bash
