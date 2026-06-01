@@ -13,6 +13,7 @@ In CrossyIce, the player controls a character on a top-down grid map. The goal i
   Verify with: `git --version` 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)  
   Verify with: `dotnet --version` (should show `10.x.x`)
+- Internet Connection
 
 ### Run
 
@@ -101,7 +102,7 @@ The stage is cleared when the player reaches the goal tile. After clearing the f
 | Solid Wall | Grey |A permanent obstacle that cannot be passed or destroyed |
 | Cracked Obstacle | Brown |A breakable obstacle that can be destroyed by a bomb explosion |
 | Start | Green dot | The player's starting position for the stage |
-| Goal | Yellow dot |The desination tile that player required to reach to clear the stage |
+| Goal | Yellow dot |The destination tile that player required to reach to clear the stage |
 
 ---
 
@@ -112,6 +113,7 @@ If the player moves onto a dry land tile, the player moves exactly one cell.
 
 If the player moves onto an ice tile, the player slides continuously in the selected direction. The player stops when one of the following happens : 
 - The player reaches the dry tile. 
+- The next cell is outside the map boundary.
 - The next cell is blocked by a solid wall.
 - The next cell is blocked by a cracked obstacle.
 - The next cell is contained a bomb.
@@ -124,8 +126,8 @@ When blocked while sliding, the player stops on the last valid cell before the b
 ### Bomb Rules
 Each stage gives the player a limited number of bombs. The remaining bomb count is displayed in the game UI.
 
-Pressing `Spacebar` places a  bomb directly in froont of the player only if all of the conditions are true :
-- The player has at least 1 bomb reamining.
+Pressing `Spacebar` places a  bomb directly in front of the player only if all of the conditions are true :
+- The player has at least 1 bomb remaining.
 - The front cell of the player is inside the map
 - The front cell of the player is empty
 - The front cell is  either dry land or ice.
@@ -141,7 +143,7 @@ If the bomb is pushed onto ice, it slides continuously in the pushed direction.
 When the player successfully pushes a bomb, the player moves into the bomb's previous cell.
 
 #### Bomb Explosions
-A bomb explodes when it slides on ice and stops because the next cell is blocked by a wall, cracked obstacle.
+A bomb explodes when it slides on ice and stops because the next cell is blocked by a wall, cracked obstacle or map boundary.
 The explosion affects a cross-shaped area : 
 ```
   X
@@ -210,7 +212,7 @@ type GameState =
     | GameClear
     | Exit
 ```
-Represensts current state of the game
+Represents current state of the game
 
 ```fsharp
 type StageDefinition =
@@ -229,7 +231,7 @@ type GridPoint = Point<int>
 type VisualPoint = Point<float32>
 ```
 `GridPoint` stores integer coordinates for logical map position
-`VisualPoint` sotres float-based coordinated for smooth visual movement
+`VisualPoint` stores float-based coordinated for smooth visual movement
 
 ```fsharp
 type Direction =
@@ -306,16 +308,35 @@ Represents the cell type used to build each stage
 ## Implementation Details
 ### Text Based Expandable Stage Layout
 Stages are managed in `StageInfo.fs`. Each stages are defined as string lists, each character represents a cell type :
-| Character | Cell |
-| --- | --- |
-| `_` | Dry land | 
-| `~` | Ice |
-| `#` | Solid Wall | 
-| `X` | Cracked Obstacle | 
-| `S` | Start point |
-| `G` | Goal point |
+| Character | Cell | Color / Visual | RGBA |
+| --- | --- | --- | --- |
+| `_` | Dry land | White tile | `(248, 248, 248, 255)` |
+| `~` | Ice | Sky blue tile | `(214, 239, 255, 255)` |
+| `#` | Solid Wall | Dark gray tile with white inner outline | Base: `(82, 89, 102, 255)`, Outline: `(255, 255, 255, 255)` |
+| `X` | Cracked Obstacle | Brown tile with darker crack lines | Base: `(177, 134, 94, 255)`, Crack lines: `(102, 72, 52, 255)` |
+| `S` | Start point | White tile with green dot | Base: `(248, 248, 248, 255)`, Dot: `(127, 214, 161, 255)` |
+| `G` | Goal point | White tile with yellow goal mark | Base: `(248, 248, 248, 255)`, Goal mark: `(255, 206, 92, 255)` |
 
 This makes stages easy to design, and easy to expand the stage without changing game logic
+
+### Proposal Implementation
+
+| No. | Proposal requirement summary | Final implementation | Status |
+| --- | --- | --- | --- |
+| 1 | Render a 2D grid map with distinct tiles, player, bombs, and destination. | Implemented with Raylib rendering. Tiles, player, bombs, cracked walls, start, and goal are visually distinguished. | Implemented |
+| 2 | Display remaining bombs and current stage number. | The UI displays `Stage : n` and a bomb counter with a bomb icon and remaining count. | Implemented |
+| 3 | Use `W`, `A`, `S`, `D` for movement and facing direction. | `Session.fs` maps WASD to directions and updates the player direction before movement. | Implemented |
+| 4 | Move one cell on dry land; slide on ice until dry land or a blocked cell. | Movement uses `getDestination`; dry tiles stop movement, ice recursively continues sliding, and walls/cracked walls/bombs stop movement. | Implemented |
+| 5 | Place a bomb with `Spacebar` only when the front cell is valid and bombs remain. | `canPlaceBombAt` checks map bounds, bomb overlap, tile type, and remaining bomb count before consuming a bomb. | Implemented |
+| 6 | Allow pushing bombs; bombs move or slide, and the player occupies the previous bomb cell. | `tryPushBomb` moves or slides the bomb, and the player moves into the bomb’s previous position only when the push succeeds. | Implemented |
+| 7 | Bombs stop safely on dry land, but explode when sliding into blocked cells or boundaries. | `getDestination` returns `Arrived` when the next reachable cell is a non-sliding, non-blocked tile, and returns `Blocked` when movement stops before a wall, cracked obstacle, or map boundary. If a pushed bomb actually moves and then receives `Blocked`, it enters `Pending` and explodes after its visual movement finishes. | Implemented |
+| 8 | Bomb explosions destroy cracked obstacles in a cross shape and trigger restart if the player is hit. | `Bomb.explode` returns center plus four orthogonal cells. `BreakFragileWall` only changes fragile walls, and player overlap switches state to `Restart`. | Implemented |
+| 9 | Press `R` anytime to restart the current stage and restore its initial state. | `Update` handles `R` before state-specific logic. `resetStage` rebuilds the stage map, clears bombs, resets bomb count, player position, and direction. | Implemented |
+| 10 | Clear a stage by navigating from the start coordinate to the destination tile. | The game checks whether the player is on `Goal`; reaching it clears the current stage. | Implemented |
+| 11 | Sequence through 5 stages and show `Game Clear` after the final stage. | `StageInfo.fs` defines 5 stages. Final-stage completion switches to `GameClear`, and the `EXIT` button sets the game state to `Exit`. | Implemented |
+
+No proposed gameplay requirement was changed.
+All implementation follows the Proposal.
 
 ### LLM Usage
 1. Making map grid design    
