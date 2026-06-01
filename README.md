@@ -17,7 +17,6 @@ In CrossyIce, the player controls a character on a top-down grid map. The goal i
 
 ### Run
 
-#### Running from source
 ```
 git clone https://github.com/leehyunseo03/CrossyIce.git
 cd CrossyIce
@@ -34,31 +33,6 @@ chmod +x run.sh
 # Or directly
 dotnet run
 ``` 
-
-#### Running from executing the file
-- **Only for Windows x64 and Linux x64 releases**
-
-1. Open the **Releases** Tab of this repository
-2. Download the latest release for your operating system
-3. Unzip the downloaded file
-4. Execute the program
-
-```bash
-# Windows
-CrossyIce.exe
-
-# Linux x64
-chmod +x CrossyIce
-./CrossyIce
-```
-
-> **Note for Linux Users**: The Linux release executable includes the .NET runtime and Raylib native library, but it still requires a graphical desktop/display environment. If the game does not start on minimal Linux, WSL, or a headless system, install common Raylib runtime dependencies:
->
-> ```bash
-> sudo apt install libasound2 libx11-6 libxrandr2 libxi6 libgl1 libglu1-mesa libxcursor1 libxinerama1
-> ```
->
-> For WSL, use WSLg or another X server/display setup because the game opens a graphical window.
 
 ### Build
 ```bash
