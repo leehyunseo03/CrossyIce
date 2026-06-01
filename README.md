@@ -24,14 +24,14 @@ cd CrossyIce
 Then run the project based on your operating system : 
 ```bash
 # Windows
-run.bat
+./run.bat
 
 # Linux x64 / macOS
 chmod +x run.sh
 ./run.sh
 
 # Or directly
-dotnet run
+dotnet run --project CrossyIce.fsproj
 ``` 
 
 ### Build
