@@ -4,7 +4,7 @@ type Bomb(initPosition: GridPoint) =
     inherit GameObject(initPosition, 10.0f)
 
     let mutable state = Normal
-    let explodeTime = 0.25f
+    let explodeTime = 0.1f
     member _.getState = state
 
     member _.clearState() =
